@@ -503,11 +503,15 @@ footer{
 
 <script>
 
+/* ============================= */
+/* SUPABASE                      */
+/* ============================= */
+
 const SUPABASE_URL =
     "https://mrctqcrcbmbsamfevmii.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_jdrEHYNZqzor4qleQX3Aw_M-SyWoWA";
+    "sb_publishable_jdrEHYNZqzor4qleQxQ3Aw_M-SyWoWA";
 
 const supabaseClient =
     window.supabase.createClient(
@@ -516,11 +520,14 @@ const supabaseClient =
     );
 
 
-/* BACKGROUND */
+/* ============================= */
+/* BACKGROUND                    */
+/* ============================= */
 
 for(let i = 0; i < 80; i++){
 
-    const dot = document.createElement("div");
+    const dot =
+        document.createElement("div");
 
     dot.className = "dot";
 
@@ -537,7 +544,9 @@ for(let i = 0; i < 80; i++){
 }
 
 
-/* INSTAGRAM */
+/* ============================= */
+/* INSTAGRAM                     */
+/* ============================= */
 
 function openInstagram(url){
 
@@ -549,11 +558,12 @@ function openInstagram(url){
         "_blank",
         "noopener,noreferrer"
     );
-
 }
 
 
-/* ESCAPE HTML */
+/* ============================= */
+/* ESCAPE HTML                   */
+/* ============================= */
 
 function escapeHTML(value){
 
@@ -563,11 +573,12 @@ function escapeHTML(value){
         .replace(/>/g,"&gt;")
         .replace(/"/g,"&quot;")
         .replace(/'/g,"&#039;");
-
 }
 
 
-/* EMOJI */
+/* ============================= */
+/* EMOJI                        */
+/* ============================= */
 
 function getEmoji(member){
 
@@ -586,16 +597,19 @@ function getEmoji(member){
         return "🗿";
 
     return member.emoji || "💀";
-
 }
 
 
-/* LOAD MEMBERS */
+/* ============================= */
+/* LOAD MEMBERS                  */
+/* ============================= */
 
 async function loadMembers(){
 
     const list =
-        document.getElementById("membersList");
+        document.getElementById(
+            "membersList"
+        );
 
     list.innerHTML = `
         <p style="color:#777;">
@@ -606,13 +620,16 @@ async function loadMembers(){
     const {
         data,
         error
-    } = await supabaseClient
-        .from("members")
-        .select(
-            "id,name,role,emoji,protected,instagram"
-        )
-        .order("id",{ascending:true});
-
+    } =
+        await supabaseClient
+            .from("members")
+            .select(
+                "id,name,role,emoji,protected,instagram"
+            )
+            .order(
+                "id",
+                {ascending:true}
+            );
 
     if(error){
 
@@ -629,17 +646,17 @@ async function loadMembers(){
         `;
 
         return;
-
     }
-
 
     console.log(
         "MEMBERS FROM SUPABASE:",
         data
     );
 
-
-    if(!data || data.length === 0){
+    if(
+        !data ||
+        data.length === 0
+    ){
 
         list.innerHTML = `
             <p style="color:#777;">
@@ -648,12 +665,9 @@ async function loadMembers(){
         `;
 
         return;
-
     }
 
-
     list.innerHTML = "";
-
 
     data.forEach(member => {
 
@@ -661,7 +675,6 @@ async function loadMembers(){
             document.createElement("div");
 
         div.className = "member";
-
 
         div.innerHTML = `
 
@@ -685,7 +698,6 @@ async function loadMembers(){
 
         `;
 
-
         if(
             member.instagram &&
             member.instagram.trim() !== ""
@@ -701,37 +713,42 @@ async function loadMembers(){
 
         }
 
-
         list.appendChild(div);
 
     });
-
 }
 
 
-/* SEND APPLICATION */
+/* ============================= */
+/* SEND APPLICATION               */
+/* ============================= */
 
 async function sendApplication(){
 
     const nick =
-        document.getElementById("nick")
-            .value.trim();
+        document.getElementById(
+            "nick"
+        ).value.trim();
 
     const discord =
-        document.getElementById("discord")
-            .value.trim();
+        document.getElementById(
+            "discord"
+        ).value.trim();
 
     const clip =
-        document.getElementById("clip")
-            .value.trim();
+        document.getElementById(
+            "clip"
+        ).value.trim();
 
     const about =
-        document.getElementById("about")
-            .value.trim();
+        document.getElementById(
+            "about"
+        ).value.trim();
 
     const status =
-        document.getElementById("joinStatus");
-
+        document.getElementById(
+            "joinStatus"
+        );
 
     if(
         !nick ||
@@ -747,33 +764,34 @@ async function sendApplication(){
             "Please fill everything out.";
 
         return;
-
     }
 
-
-    status.style.color = "#777";
+    status.style.color =
+        "#777";
 
     status.textContent =
         "Sending application...";
 
-
     const {
         error
-    } = await supabaseClient
-        .from("applications")
-        .insert({
+    } =
+        await supabaseClient
+            .from("applications")
+            .insert({
 
-            nick,
-            discord,
-            clip,
-            about
+                nick: nick,
+                discord: discord,
+                clip: clip,
+                about: about
 
-        });
-
+            });
 
     if(error){
 
-        console.error(error);
+        console.error(
+            "APPLICATION ERROR:",
+            error
+        );
 
         status.style.color =
             "#ff3333";
@@ -782,9 +800,7 @@ async function sendApplication(){
             "Something went wrong.";
 
         return;
-
     }
-
 
     status.style.color =
         "#32d66b";
@@ -792,23 +808,27 @@ async function sendApplication(){
     status.textContent =
         "Application sent!";
 
+    document.getElementById(
+        "nick"
+    ).value = "";
 
-    document.getElementById("nick")
-        .value = "";
+    document.getElementById(
+        "discord"
+    ).value = "";
 
-    document.getElementById("discord")
-        .value = "";
+    document.getElementById(
+        "clip"
+    ).value = "";
 
-    document.getElementById("clip")
-        .value = "";
-
-    document.getElementById("about")
-        .value = "";
-
+    document.getElementById(
+        "about"
+    ).value = "";
 }
 
 
-/* STAFF LOGIN */
+/* ============================= */
+/* STAFF LOGIN                   */
+/* ============================= */
 
 async function loginStaff(){
 
@@ -822,7 +842,6 @@ async function loginStaff(){
             "loginStatus"
         );
 
-
     if(!password){
 
         status.style.color =
@@ -832,15 +851,13 @@ async function loginStaff(){
             "Enter the staff password.";
 
         return;
-
     }
 
-
-    status.style.color = "#777";
+    status.style.color =
+        "#777";
 
     status.textContent =
         "Logging in...";
-
 
     try{
 
@@ -852,18 +869,16 @@ async function loginStaff(){
                 "staff-login",
                 {
                     body:{
-                        password: password
+                        password:password
                     }
                 }
             );
-
 
         console.log(
             "STAFF LOGIN:",
             data,
             error
         );
-
 
         if(
             error ||
@@ -883,20 +898,19 @@ async function loginStaff(){
                 "Wrong password.";
 
             return;
-
         }
-
 
         status.textContent = "";
 
         document.getElementById(
             "staffLogin"
-        ).style.display = "none";
+        ).style.display =
+            "none";
 
         document.getElementById(
             "staffPanel"
-        ).style.display = "block";
-
+        ).style.display =
+            "block";
 
         loadApplications();
 
@@ -917,28 +931,31 @@ async function loginStaff(){
             "Login failed.";
 
     }
-
 }
 
 
-/* LOAD APPLICATIONS */
+/* ============================= */
+/* LOAD APPLICATIONS             */
+/* ============================= */
 
 async function loadApplications(){
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("applications")
-        .select("*")
-        .order("id",{ascending:false});
-
 
     const list =
         document.getElementById(
             "applicationsList"
         );
 
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("applications")
+            .select("*")
+            .order(
+                "id",
+                {ascending:false}
+            );
 
     if(error){
 
@@ -951,9 +968,7 @@ async function loadApplications(){
             "<p>Failed to load applications.</p>";
 
         return;
-
     }
-
 
     if(
         !data ||
@@ -964,12 +979,9 @@ async function loadApplications(){
             "<p>No applications.</p>";
 
         return;
-
     }
 
-
     list.innerHTML = "";
-
 
     data.forEach(app => {
 
@@ -978,7 +990,6 @@ async function loadApplications(){
 
         div.className =
             "application";
-
 
         div.innerHTML = `
 
@@ -997,7 +1008,6 @@ async function loadApplications(){
             </p>
 
             <p>
-
                 <a
                     href="${escapeHTML(app.clip)}"
                     target="_blank"
@@ -1005,7 +1015,6 @@ async function loadApplications(){
                 >
                     VIEW CLIP
                 </a>
-
             </p>
 
             <div class="actions">
@@ -1025,30 +1034,29 @@ async function loadApplications(){
                 </button>
 
             </div>
-
         `;
-
 
         list.appendChild(div);
 
     });
-
 }
 
 
-/* ACCEPT */
+/* ============================= */
+/* ACCEPT APPLICATION             */
+/* ============================= */
 
 async function acceptApplication(id){
 
     const {
         data: app,
         error: fetchError
-    } = await supabaseClient
-        .from("applications")
-        .select("*")
-        .eq("id",id)
-        .single();
-
+    } =
+        await supabaseClient
+            .from("applications")
+            .select("*")
+            .eq("id",id)
+            .single();
 
     if(
         fetchError ||
@@ -1060,36 +1068,35 @@ async function acceptApplication(id){
         );
 
         return;
-
     }
-
 
     if(
         !confirm(
             `Accept ${app.nick} into RÆVEN?`
         )
-    )
-        return;
+    ){
 
+        return;
+    }
 
     const {
         error: insertError
-    } = await supabaseClient
-        .from("members")
-        .insert({
+    } =
+        await supabaseClient
+            .from("members")
+            .insert({
 
-            name: app.nick,
+                name:app.nick,
 
-            role: "MEMBER",
+                role:"MEMBER",
 
-            emoji: "💀",
+                emoji:"💀",
 
-            protected: false,
+                protected:false,
 
-            instagram: ""
+                instagram:""
 
-        });
-
+            });
 
     if(insertError){
 
@@ -1103,17 +1110,15 @@ async function acceptApplication(id){
         );
 
         return;
-
     }
-
 
     const {
         error: deleteError
-    } = await supabaseClient
-        .from("applications")
-        .delete()
-        .eq("id",id);
-
+    } =
+        await supabaseClient
+            .from("applications")
+            .delete()
+            .eq("id",id);
 
     if(deleteError){
 
@@ -1122,21 +1127,24 @@ async function acceptApplication(id){
             deleteError
         );
 
+        alert(
+            "Member added, but application could not be deleted."
+        );
+
         return;
-
     }
-
 
     loadMembers();
 
     loadApplications();
 
     loadStaffMembers();
-
 }
 
 
-/* REJECT */
+/* ============================= */
+/* REJECT APPLICATION             */
+/* ============================= */
 
 async function rejectApplication(id){
 
@@ -1144,54 +1152,59 @@ async function rejectApplication(id){
         !confirm(
             "Reject this application?"
         )
-    )
-        return;
+    ){
 
+        return;
+    }
 
     const {
         error
-    } = await supabaseClient
-        .from("applications")
-        .delete()
-        .eq("id",id);
-
+    } =
+        await supabaseClient
+            .from("applications")
+            .delete()
+            .eq("id",id);
 
     if(error){
 
-        console.error(error);
+        console.error(
+            "REJECT ERROR:",
+            error
+        );
 
         alert(
             "Could not reject application."
         );
 
         return;
-
     }
 
-
     loadApplications();
-
 }
 
 
-/* STAFF MEMBERS */
+/* ============================= */
+/* LOAD STAFF MEMBERS             */
+/* ============================= */
 
 async function loadStaffMembers(){
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("members")
-        .select("*")
-        .order("id",{ascending:true});
-
 
     const list =
         document.getElementById(
             "staffMembersList"
         );
 
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("members")
+            .select("*")
+            .order(
+                "id",
+                {ascending:true}
+            );
 
     if(error){
 
@@ -1204,9 +1217,7 @@ async function loadStaffMembers(){
             "<p>Failed to load members.</p>";
 
         return;
-
     }
-
 
     if(
         !data ||
@@ -1217,12 +1228,9 @@ async function loadStaffMembers(){
             "<p>No members.</p>";
 
         return;
-
     }
 
-
     list.innerHTML = "";
-
 
     data.forEach(member => {
 
@@ -1232,9 +1240,7 @@ async function loadStaffMembers(){
         div.className =
             "staff-member";
 
-
         let action = "";
-
 
         if(member.protected){
 
@@ -1261,9 +1267,7 @@ async function loadStaffMembers(){
                 </button>
 
             `;
-
         }
-
 
         div.innerHTML = `
 
@@ -1296,15 +1300,15 @@ async function loadStaffMembers(){
 
         `;
 
-
         list.appendChild(div);
 
     });
-
 }
 
 
-/* KICK */
+/* ============================= */
+/* KICK MEMBER                   */
+/* ============================= */
 
 async function kickMember(id,name){
 
@@ -1319,25 +1323,24 @@ async function kickMember(id,name){
         );
 
         return;
-
     }
-
 
     if(
         !confirm(
             `Kick ${name} from RÆVEN?`
         )
-    )
-        return;
+    ){
 
+        return;
+    }
 
     const {
         error
-    } = await supabaseClient
-        .from("members")
-        .delete()
-        .eq("id",id);
-
+    } =
+        await supabaseClient
+            .from("members")
+            .delete()
+            .eq("id",id);
 
     if(error){
 
@@ -1351,18 +1354,17 @@ async function kickMember(id,name){
         );
 
         return;
-
     }
-
 
     loadMembers();
 
     loadStaffMembers();
-
 }
 
 
-/* REALTIME */
+/* ============================= */
+/* REALTIME MEMBERS               */
+/* ============================= */
 
 supabaseClient
     .channel("public-members")
@@ -1377,21 +1379,27 @@ supabaseClient
 
             loadMembers();
 
-
-            if(
+            const panel =
                 document.getElementById(
                     "staffPanel"
-                ).style.display === "block"
+                );
+
+            if(
+                panel &&
+                panel.style.display === "block"
             ){
 
                 loadStaffMembers();
 
             }
-
         }
     )
     .subscribe();
 
+
+/* ============================= */
+/* REALTIME APPLICATIONS          */
+/* ============================= */
 
 supabaseClient
     .channel("public-applications")
@@ -1404,22 +1412,27 @@ supabaseClient
         },
         () => {
 
-            if(
+            const panel =
                 document.getElementById(
                     "staffPanel"
-                ).style.display === "block"
+                );
+
+            if(
+                panel &&
+                panel.style.display === "block"
             ){
 
                 loadApplications();
 
             }
-
         }
     )
     .subscribe();
 
 
-/* START */
+/* ============================= */
+/* START                         */
+/* ============================= */
 
 loadMembers();
 
