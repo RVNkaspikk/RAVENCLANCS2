@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RÆVEN — CS2 CLAN</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#050505;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+    overflow-x:hidden;
+}
+
+.background{
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 20% 20%,rgba(255,0,0,.12),transparent 30%),
+        radial-gradient(circle at 80% 80%,rgba(255,0,0,.08),transparent 30%);
+    z-index:-2;
+}
+
+.dot{
+    position:fixed;
+    width:3px;
+    height:3px;
+    background:#ff1a1a;
+    border-radius:50%;
+    opacity:.45;
+    animation:float 8s linear infinite;
+    z-index:-1;
+}
+
+@keyframes float{
+    0%{
+        transform:translateY(100vh);
+        opacity:0;
+    }
+    20%{
+        opacity:.5;
+    }
+    80%{
+        opacity:.5;
+    }
+    100%{
+        transform:translateY(-10vh);
+        opacity:0;
+    }
+}
+
+nav{
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    width:calc(100% - 40px);
+    max-width:1100px;
+    padding:18px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(10,10,10,.75);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(15px);
+    border-radius:15px;
+    z-index:100;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:900;
+    letter-spacing:3px;
+}
+
+.logo span,
+h1 span{
+    color:#ff1616;
+}
+
+nav a{
+    color:#aaa;
+    text-decoration:none;
+    margin-left:25px;
+    font-size:13px;
+    font-weight:bold;
+    transition:.2s;
+}
+
+nav a:hover{
+    color:#ff2020;
+}
+
+section{
+    max-width:1100px;
+    margin:auto;
+    padding:100px 20px;
+}
+
+.hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:clamp(70px,15vw,170px);
+    font-weight:1000;
+    letter-spacing:15px;
+    line-height:.9;
+}
+
+.hero p{
+    margin-top:25px;
+    color:#777;
+    letter-spacing:7px;
+    font-size:13px;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:35px;
+    padding:15px 30px;
+    background:#ff1616;
+    color:white;
+    border:none;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.btn:hover{
+    background:#d90000;
+    transform:translateY(-2px);
+}
+
+.section-title{
+    font-size:35px;
+    margin-bottom:40px;
+    letter-spacing:2px;
+}
+
+.members-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:20px;
+}
+
+.member{
+    padding:30px;
+    background:rgba(15,15,15,.8);
+    border:1px solid #222;
+    border-radius:15px;
+    text-align:center;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.member:hover{
+    border-color:#ff1616;
+    transform:translateY(-5px);
+}
+
+.member .emoji{
+    font-size:45px;
+    margin-bottom:15px;
+}
+
+.member h3{
+    font-size:20px;
+}
+
+.member p{
+    margin-top:7px;
+    color:#777;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+.join-box{
+    max-width:600px;
+    margin:auto;
+    padding:35px;
+    background:rgba(15,15,15,.85);
+    border:1px solid #222;
+    border-radius:15px;
+}
+
+input,
+textarea{
+    width:100%;
+    margin-bottom:15px;
+    padding:15px;
+    background:#080808;
+    border:1px solid #292929;
+    color:white;
+    border-radius:8px;
+    outline:none;
+    font-family:inherit;
+}
+
+input:focus,
+textarea:focus{
+    border-color:#ff1616;
+}
+
+textarea{
+    min-height:130px;
+    resize:vertical;
+}
+
+.status{
+    margin-top:15px;
+    font-size:13px;
+}
+
+.staff-login{
+    max-width:500px;
+    margin:auto;
+    text-align:center;
+}
+
+.staff-panel{
+    display:none;
+    margin-top:50px;
+}
+
+.panel-box{
+    background:rgba(15,15,15,.85);
+    border:1px solid #222;
+    border-radius:15px;
+    padding:30px;
+    margin-bottom:25px;
+}
+
+.panel-box h3{
+    margin-bottom:25px;
+    letter-spacing:2px;
+}
+
+.application{
+    padding:20px 0;
+    border-bottom:1px solid #222;
+}
+
+.application:last-child{
+    border-bottom:none;
+}
+
+.application strong{
+    color:#fff;
+}
+
+.application p{
+    color:#999;
+    margin:7px 0;
+}
+
+.application a{
+    color:#ff2222;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.accept,
+.reject,
+.kick{
+    border:none;
+    padding:9px 15px;
+    border-radius:6px;
+    cursor:pointer;
+    color:white;
+    font-weight:bold;
+}
+
+.accept{
+    background:#159447;
+}
+
+.reject{
+    background:#b71919;
+}
+
+.kick{
+    background:#b71919;
+}
+
+.staff-member{
+    padding:15px 0;
+    border-bottom:1px solid #222;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.staff-member:last-child{
+    border-bottom:none;
+}
+
+footer{
+    text-align:center;
+    padding:50px 20px;
+    color:#444;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+@media(max-width:700px){
+    nav{
+        padding:15px;
+    }
+
+    nav a{
+        margin-left:10px;
+        font-size:10px;
+    }
+
+    .hero h1{
+        letter-spacing:7px;
+    }
+
+    .join-box,
+    .panel-box{
+        padding:20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<nav>
+    <div class="logo">R<span>Æ</span>VEN</div>
+
+    <div>
+        <a href="#home">HOME</a>
+        <a href="#members">MEMBERS</a>
+        <a href="#join">JOIN</a>
+        <a href="#staff">STAFF</a>
+    </div>
+</nav>
+
+<section class="hero" id="home">
+
+    <h1>R<span>Æ</span>VEN</h1>
+
+    <p>CS2 CLAN • NO MERCY</p>
+
+    <a class="btn" href="#join">
+        JOIN RÆVEN
+    </a>
+
+</section>
+
+<section id="members">
+
+    <h2 class="section-title">
+        MEMBERS
+    </h2>
+
+    <div class="members-grid" id="membersList">
+
+        <div class="member">
+            <div class="emoji">⏳</div>
+            <h3>LOADING</h3>
+            <p>MEMBERS</p>
+        </div>
+
+    </div>
+
+</section>
+
+<section id="join">
+
+    <h2 class="section-title">
+        JOIN RÆVEN
+    </h2>
+
+    <div class="join-box">
+
+        <input
+            id="nick"
+            type="text"
+            placeholder="Nickname"
+            required
+        >
+
+        <input
+            id="discord"
+            type="text"
+            placeholder="Discord"
+            required
+        >
+
+        <input
+            id="clip"
+            type="url"
+            placeholder="Clip URL"
+            required
+        >
+
+        <textarea
+            id="about"
+            placeholder="Something about you"
+            required
+        ></textarea>
+
+        <button
+            class="btn"
+            onclick="sendApplication()"
+        >
+            SEND APPLICATION
+        </button>
+
+        <p class="status" id="joinStatus"></p>
+
+    </div>
+
+</section>
+
+<section id="staff">
+
+    <h2 class="section-title">
+        STAFF
+    </h2>
+
+    <div class="staff-login" id="staffLogin">
+
+        <input
+            id="staffPassword"
+            type="password"
+            placeholder="Staff password"
+        >
+
+        <button
+            class="btn"
+            onclick="loginStaff()"
+        >
+            LOGIN
+        </button>
+
+        <p id="loginStatus"></p>
+
+    </div>
+
+    <div class="staff-panel" id="staffPanel">
+
+        <div class="panel-box">
+
+            <h3>
+                APPLICATIONS
+            </h3>
+
+            <div id="applicationsList">
+                Loading...
+            </div>
+
+        </div>
+
+        <div class="panel-box">
+
+            <h3>
+                MEMBERS
+            </h3>
+
+            <div id="staffMembersList">
+                Loading...
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer>
+    RÆVEN © 2026
+</footer>
+
+<script>
+
+const SUPABASE_URL =
+    "https://mrctqcrcbmbsamfevmii.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_jdrEHYNZqzor4qleQX3Aw_M-SyWoWA";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* BACKGROUND */
+
+for(let i = 0; i < 80; i++){
+
+    const dot = document.createElement("div");
+
+    dot.className = "dot";
+
+    dot.style.left =
+        Math.random() * 100 + "%";
+
+    dot.style.animationDelay =
+        Math.random() * 8 + "s";
+
+    dot.style.animationDuration =
+        5 + Math.random() * 8 + "s";
+
+    document.body.appendChild(dot);
+}
+
+
+/* INSTAGRAM */
+
+function openInstagram(url){
+
+    if(!url)
+        return;
+
+    window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+}
+
+
+/* ESCAPE HTML */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* EMOJI */
+
+function getEmoji(member){
+
+    const name =
+        String(member.name || "")
+            .trim()
+            .toUpperCase();
+
+    if(name === "MONARCH")
+        return "👑";
+
+    if(
+        name === "RENOX" ||
+        name === "KASPIKK"
+    )
+        return "🗿";
+
+    return member.emoji || "💀";
+
+}
+
+
+/* LOAD MEMBERS */
+
+async function loadMembers(){
+
+    const list =
+        document.getElementById("membersList");
+
+    list.innerHTML = `
+        <p style="color:#777;">
+            Loading members...
+        </p>
+    `;
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("members")
+        .select(
+            "id,name,role,emoji,protected,instagram"
+        )
+        .order("id",{ascending:true});
+
+
+    if(error){
+
+        console.error(
+            "MEMBERS ERROR:",
+            error
+        );
+
+        list.innerHTML = `
+            <p style="color:#ff3333;">
+                Failed to load members.<br>
+                ${escapeHTML(error.message)}
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    console.log(
+        "MEMBERS FROM SUPABASE:",
+        data
+    );
+
+
+    if(!data || data.length === 0){
+
+        list.innerHTML = `
+            <p style="color:#777;">
+                No members found.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    data.forEach(member => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "member";
+
+
+        div.innerHTML = `
+
+            <div class="emoji">
+                ${escapeHTML(
+                    getEmoji(member)
+                )}
+            </div>
+
+            <h3>
+                ${escapeHTML(
+                    member.name
+                )}
+            </h3>
+
+            <p>
+                ${escapeHTML(
+                    member.role || "MEMBER"
+                )}
+            </p>
+
+        `;
+
+
+        if(
+            member.instagram &&
+            member.instagram.trim() !== ""
+        ){
+
+            div.onclick = () => {
+
+                openInstagram(
+                    member.instagram
+                );
+
+            };
+
+        }
+
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* SEND APPLICATION */
+
+async function sendApplication(){
+
+    const nick =
+        document.getElementById("nick")
+            .value.trim();
+
+    const discord =
+        document.getElementById("discord")
+            .value.trim();
+
+    const clip =
+        document.getElementById("clip")
+            .value.trim();
+
+    const about =
+        document.getElementById("about")
+            .value.trim();
+
+    const status =
+        document.getElementById("joinStatus");
+
+
+    if(
+        !nick ||
+        !discord ||
+        !clip ||
+        !about
+    ){
+
+        status.style.color =
+            "#ff3333";
+
+        status.textContent =
+            "Please fill everything out.";
+
+        return;
+
+    }
+
+
+    status.style.color = "#777";
+
+    status.textContent =
+        "Sending application...";
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("applications")
+        .insert({
+
+            nick,
+            discord,
+            clip,
+            about
+
+        });
+
+
+    if(error){
+
+        console.error(error);
+
+        status.style.color =
+            "#ff3333";
+
+        status.textContent =
+            "Something went wrong.";
+
+        return;
+
+    }
+
+
+    status.style.color =
+        "#32d66b";
+
+    status.textContent =
+        "Application sent!";
+
+
+    document.getElementById("nick")
+        .value = "";
+
+    document.getElementById("discord")
+        .value = "";
+
+    document.getElementById("clip")
+        .value = "";
+
+    document.getElementById("about")
+        .value = "";
+
+}
+
+
+/* STAFF LOGIN */
+
+async function loginStaff(){
+
+    const password =
+        document.getElementById(
+            "staffPassword"
+        ).value;
+
+    const status =
+        document.getElementById(
+            "loginStatus"
+        );
+
+
+    if(!password){
+
+        status.style.color =
+            "#ff3333";
+
+        status.textContent =
+            "Enter the staff password.";
+
+        return;
+
+    }
+
+
+    status.style.color = "#777";
+
+    status.textContent =
+        "Logging in...";
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.functions.invoke(
+                "staff-login",
+                {
+                    body:{
+                        password: password
+                    }
+                }
+            );
+
+
+        console.log(
+            "STAFF LOGIN:",
+            data,
+            error
+        );
+
+
+        if(
+            error ||
+            !data ||
+            data.success !== true
+        ){
+
+            console.error(
+                "STAFF LOGIN ERROR:",
+                error
+            );
+
+            status.style.color =
+                "#ff3333";
+
+            status.textContent =
+                "Wrong password.";
+
+            return;
+
+        }
+
+
+        status.textContent = "";
+
+        document.getElementById(
+            "staffLogin"
+        ).style.display = "none";
+
+        document.getElementById(
+            "staffPanel"
+        ).style.display = "block";
+
+
+        loadApplications();
+
+        loadStaffMembers();
+
+    }
+    catch(error){
+
+        console.error(
+            "LOGIN FAILED:",
+            error
+        );
+
+        status.style.color =
+            "#ff3333";
+
+        status.textContent =
+            "Login failed.";
+
+    }
+
+}
+
+
+/* LOAD APPLICATIONS */
+
+async function loadApplications(){
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("applications")
+        .select("*")
+        .order("id",{ascending:false});
+
+
+    const list =
+        document.getElementById(
+            "applicationsList"
+        );
+
+
+    if(error){
+
+        console.error(
+            "APPLICATION ERROR:",
+            error
+        );
+
+        list.innerHTML =
+            "<p>Failed to load applications.</p>";
+
+        return;
+
+    }
+
+
+    if(
+        !data ||
+        data.length === 0
+    ){
+
+        list.innerHTML =
+            "<p>No applications.</p>";
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    data.forEach(app => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "application";
+
+
+        div.innerHTML = `
+
+            <strong>
+                ${escapeHTML(app.nick)}
+            </strong>
+
+            <p>
+                Discord:
+                ${escapeHTML(app.discord)}
+            </p>
+
+            <p>
+                About:
+                ${escapeHTML(app.about)}
+            </p>
+
+            <p>
+
+                <a
+                    href="${escapeHTML(app.clip)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    VIEW CLIP
+                </a>
+
+            </p>
+
+            <div class="actions">
+
+                <button
+                    class="accept"
+                    onclick="acceptApplication(${app.id})"
+                >
+                    ACCEPT
+                </button>
+
+                <button
+                    class="reject"
+                    onclick="rejectApplication(${app.id})"
+                >
+                    REJECT
+                </button>
+
+            </div>
+
+        `;
+
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* ACCEPT */
+
+async function acceptApplication(id){
+
+    const {
+        data: app,
+        error: fetchError
+    } = await supabaseClient
+        .from("applications")
+        .select("*")
+        .eq("id",id)
+        .single();
+
+
+    if(
+        fetchError ||
+        !app
+    ){
+
+        alert(
+            "Application not found."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !confirm(
+            `Accept ${app.nick} into RÆVEN?`
+        )
+    )
+        return;
+
+
+    const {
+        error: insertError
+    } = await supabaseClient
+        .from("members")
+        .insert({
+
+            name: app.nick,
+
+            role: "MEMBER",
+
+            emoji: "💀",
+
+            protected: false,
+
+            instagram: ""
+
+        });
+
+
+    if(insertError){
+
+        console.error(
+            "ADD MEMBER ERROR:",
+            insertError
+        );
+
+        alert(
+            "Could not add member."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error: deleteError
+    } = await supabaseClient
+        .from("applications")
+        .delete()
+        .eq("id",id);
+
+
+    if(deleteError){
+
+        console.error(
+            "DELETE APPLICATION ERROR:",
+            deleteError
+        );
+
+        return;
+
+    }
+
+
+    loadMembers();
+
+    loadApplications();
+
+    loadStaffMembers();
+
+}
+
+
+/* REJECT */
+
+async function rejectApplication(id){
+
+    if(
+        !confirm(
+            "Reject this application?"
+        )
+    )
+        return;
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("applications")
+        .delete()
+        .eq("id",id);
+
+
+    if(error){
+
+        console.error(error);
+
+        alert(
+            "Could not reject application."
+        );
+
+        return;
+
+    }
+
+
+    loadApplications();
+
+}
+
+
+/* STAFF MEMBERS */
+
+async function loadStaffMembers(){
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("members")
+        .select("*")
+        .order("id",{ascending:true});
+
+
+    const list =
+        document.getElementById(
+            "staffMembersList"
+        );
+
+
+    if(error){
+
+        console.error(
+            "STAFF MEMBERS ERROR:",
+            error
+        );
+
+        list.innerHTML =
+            "<p>Failed to load members.</p>";
+
+        return;
+
+    }
+
+
+    if(
+        !data ||
+        data.length === 0
+    ){
+
+        list.innerHTML =
+            "<p>No members.</p>";
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    data.forEach(member => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "staff-member";
+
+
+        let action = "";
+
+
+        if(member.protected){
+
+            action =
+                "<span>PROTECTED</span>";
+
+        }
+        else{
+
+            action = `
+
+                <button
+                    class="kick"
+                    onclick="kickMember(
+                        ${member.id},
+                        '${String(
+                            member.name || ""
+                        )
+                        .replace(/\\/g,"\\\\")
+                        .replace(/'/g,"\\'")}'
+                    )"
+                >
+                    KICK
+                </button>
+
+            `;
+
+        }
+
+
+        div.innerHTML = `
+
+            <div>
+
+                ${escapeHTML(
+                    getEmoji(member)
+                )}
+
+                <strong>
+                    ${escapeHTML(
+                        member.name
+                    )}
+                </strong>
+
+                <span
+                    style="
+                        color:#666;
+                        margin-left:8px;
+                    "
+                >
+                    ${escapeHTML(
+                        member.role || "MEMBER"
+                    )}
+                </span>
+
+            </div>
+
+            ${action}
+
+        `;
+
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* KICK */
+
+async function kickMember(id,name){
+
+    if(
+        String(name)
+            .trim()
+            .toUpperCase() === "MONARCH"
+    ){
+
+        alert(
+            "MONARCH cannot be kicked."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !confirm(
+            `Kick ${name} from RÆVEN?`
+        )
+    )
+        return;
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("members")
+        .delete()
+        .eq("id",id);
+
+
+    if(error){
+
+        console.error(
+            "KICK ERROR:",
+            error
+        );
+
+        alert(
+            "Could not kick member."
+        );
+
+        return;
+
+    }
+
+
+    loadMembers();
+
+    loadStaffMembers();
+
+}
+
+
+/* REALTIME */
+
+supabaseClient
+    .channel("public-members")
+    .on(
+        "postgres_changes",
+        {
+            event:"*",
+            schema:"public",
+            table:"members"
+        },
+        () => {
+
+            loadMembers();
+
+
+            if(
+                document.getElementById(
+                    "staffPanel"
+                ).style.display === "block"
+            ){
+
+                loadStaffMembers();
+
+            }
+
+        }
+    )
+    .subscribe();
+
+
+supabaseClient
+    .channel("public-applications")
+    .on(
+        "postgres_changes",
+        {
+            event:"*",
+            schema:"public",
+            table:"applications"
+        },
+        () => {
+
+            if(
+                document.getElementById(
+                    "staffPanel"
+                ).style.display === "block"
+            ){
+
+                loadApplications();
+
+            }
+
+        }
+    )
+    .subscribe();
+
+
+/* START */
+
+loadMembers();
+
+</script>
+
+</body>
+</html>
