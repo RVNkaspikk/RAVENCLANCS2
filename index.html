@@ -577,7 +577,7 @@ function escapeHTML(value){
 
 
 /* ============================= */
-/* EMOJI                        */
+/* EMOJI                         */
 /* ============================= */
 
 function getEmoji(member){
@@ -866,7 +866,7 @@ async function loginStaff(){
             error
         } =
             await supabaseClient.functions.invoke(
-                "staff-login",
+                "login-staff",
                 {
                     body:{
                         password:password
